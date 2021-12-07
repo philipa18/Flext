@@ -1,9 +1,13 @@
 import os
 
-from flask import Flask
+from flask import Flask, render_template
 
 from flask_app.socials.routes import socials
 from flask_app.users.routes import users
+
+def page_not_found(e):
+    return render_template("404.html"), 404
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
@@ -27,10 +31,6 @@ def create_app(test_config=None):
 
     app.register_blueprint(users)
     app.register_blueprint(socials)
-
-    # a simple page that says hello
-    # @app.route('/')
-    # def hello():
-    #     return 'Hello, World!'
+    app.register_error_handler(404, page_not_found)
 
     return app
