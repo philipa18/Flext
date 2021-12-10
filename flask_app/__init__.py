@@ -1,36 +1,43 @@
+from flask import Flask, render_template
+from flask_mongoengine import MongoEngine
+from flask_login import (
+    LoginManager,
+    current_user,
+    login_user,
+    logout_user,
+    login_required,
+)
+from flask_bcrypt import Bcrypt
+from werkzeug.utils import secure_filename
+
+# stdlib
+from datetime import datetime
 import os
 
-from flask import Flask, render_template
+# Blueprints
+from .socials.routes import socials
+from .users.routes import users
 
-from flask_app.socials.routes import socials
-from flask_app.users.routes import users
+db = MongoEngine()
+login_manager = LoginManager()
+bcrypt = Bcrypt()
 
 def page_not_found(e):
     return render_template("404.html"), 404
 
 def create_app(test_config=None):
-    # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY='dev',
-        DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
-    )
+    app = Flask(__name__)
 
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile('config.py', silent=True)
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
+    app.config.from_pyfile("config.py", silent=False)
+    if test_config is not None:
+        app.config.update(test_config)
 
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+    db.init_app(app)
+    login_manager.init_app(app)
+    bcrypt.init_app(app)
 
-    app.register_blueprint(users)
     app.register_blueprint(socials)
+    app.register_blueprint(users)
     app.register_error_handler(404, page_not_found)
 
     return app
