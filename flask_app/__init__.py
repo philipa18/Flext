@@ -14,10 +14,6 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
 
-# Blueprints
-from .socials.routes import socials
-from .users.routes import users
-
 db = MongoEngine()
 login_manager = LoginManager()
 bcrypt = Bcrypt()
@@ -41,3 +37,7 @@ def create_app(test_config=None):
     app.register_error_handler(404, page_not_found)
 
     return app
+
+# Blueprints
+from .socials.routes import socials
+from .users.routes import users
