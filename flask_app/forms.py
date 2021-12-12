@@ -22,9 +22,15 @@ class SearchForm(FlaskForm):
 
 class CommentForm(FlaskForm):
     text = TextAreaField(
-        "Comment", validators=[InputRequired(), Length(min=1, max=500)]
+        "Comment", validators=[InputRequired(), Length(min=1, max=250)]
     )
     submit = SubmitField("Comment")
+
+class PostForm(FlaskForm):
+    text = TextAreaField(
+        "Post", validators=[InputRequired(), Length(min=1, max=500)]
+    )
+    submit = SubmitField("Post")
 
 class RegistrationForm(FlaskForm):
     username = StringField(

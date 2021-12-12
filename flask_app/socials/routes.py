@@ -1,6 +1,7 @@
 from flask import Blueprint, redirect, url_for, render_template
-from ..forms import SearchForm, RegistrationForm
-from ..models import User, Comment
+from flask_login import current_user
+from ..forms import PostForm, RegistrationForm
+from ..models import Post, User, Comment
 
 socials = Blueprint('socials', __name__)
 
@@ -9,9 +10,13 @@ socials = Blueprint('socials', __name__)
 # other users by username
 @socials.route('/', methods=['GET', 'POST'])
 def index():
-    form = SearchForm()
+    form = PostForm()
 
-    if form.validate_on_submit():
-        return redirect(url_for("socials.query_results", query=form.search_query.data))
+    if form.validate_on_submit() and current_user.is_authenticated:
+        Post(poster=current_user._get_current_object(),
+            content=form.text.data,).save()
+        return redirect(url_for("socials.index"))
+    
+    posts = Post.objects()
 
-    return render_template("index.html", form=form)
+    return render_template("index.html", form=form, posts=posts)

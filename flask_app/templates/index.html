@@ -15,11 +15,11 @@
             {% endwith %}
 
             {{ form.csrf_token }}
-            {{ form.search_query(class="form-control", placeholder="Search") }}
+            {{ form.text(class="form-control", placeholder="Post") }}
 
-            {% if form.search_query.errors %}
+            {% if form.text.errors %}
             <div class="alert alert-warning" role="alert">
-                {% for error in form.search_query.errors %}
+                {% for error in form.text.errors %}
                 <span>{{ error }}</span>
                 {% endfor %}
             </div>
@@ -29,7 +29,14 @@
         </form>
     </div>
     <div class="col">
-        <h2>Please use the search bar to search for movies! Then you can review them </h2>
+        <h2>Posts go here </h2>
+        {% for post in posts %}
+        <h3>{{ post.poster.username }}</h3>
+        {{post.content}}
+        {% endfor %}
+    </div>
+    <div class="col">
+        <h2>Something else here</h2>
     </div>
 </div>
 {% endblock %}
