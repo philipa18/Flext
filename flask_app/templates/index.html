@@ -15,11 +15,29 @@
             {% endwith %}
 
             {{ form.csrf_token }}
+            {{ form.title(class="form-control", placeholder="Title") }}
+            
+            {% if form.title.errors %}
+            <div class="alert alert-warning" role="alert">
+                {% for error in form.title.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
             {{ form.text(class="form-control", placeholder="Post") }}
-
             {% if form.text.errors %}
             <div class="alert alert-warning" role="alert">
                 {% for error in form.text.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {{ form.calories(class="form-control", placeholder="Calories Burned") }}
+            {% if form.calories.errors %}
+            <div class="alert alert-warning" role="alert">
+                {% for error in form.calories.errors %}
                 <span>{{ error }}</span>
                 {% endfor %}
             </div>
@@ -31,8 +49,14 @@
     <div class="col">
         <h2>Posts go here </h2>
         {% for post in posts %}
-        <h3>{{ post.poster.username }}</h3>
-        {{post.content}}
+            <h3><a href="{{ url_for('socials.post_detail', post_id=post.id) }}">{{ post.title }}</a></h3>
+            User: {{post.poster.username}}
+            {% if post.calories %}
+                <br>
+                Calories Burned:{{post.calories}}
+            {% endif %}
+            <br>
+            <br>
         {% endfor %}
     </div>
     <div class="col">

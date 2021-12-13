@@ -2,7 +2,7 @@ from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from werkzeug.utils import secure_filename
-from wtforms import StringField, BooleanField, SubmitField, TextAreaField, PasswordField
+from wtforms import StringField, BooleanField, SubmitField, StringField, TextAreaField, PasswordField, IntegerField
 from wtforms.validators import (
     InputRequired,
     DataRequired,
@@ -21,13 +21,12 @@ class CommentForm(FlaskForm):
     submit = SubmitField("Comment")
 
 class PostForm(FlaskForm):
+    title = StringField(validators=[InputRequired(), Length(min=1, max=50)])
+    calories = IntegerField()
     text = TextAreaField(
         "Post", validators=[InputRequired(), Length(min=1, max=500)]
     )
     submit = SubmitField("Post")
-
-class PumpForm(FlaskForm):
-    pumped = BooleanField("Pump")
 
 class RegistrationForm(FlaskForm):
     username = StringField(
@@ -48,13 +47,13 @@ class RegistrationForm(FlaskForm):
     def validate_password(self, password):
         t: str = password.data
         
-        if t.islower:
+        if t.islower():
             raise ValidationError("Password requires at least 1 uppercase letter")
-        if t.isupper:
+        if t.isupper():
             raise ValidationError("Password requires at least 1 lowercase letter")
-        if t.isalpha:
+        if t.isalpha():
             raise ValidationError("Password requires at least 1 numeric character")
-        if t.isalnum:
+        if t.isalnum():
             raise ValidationError("Password requires at least 1 special character")
 
     def validate_email(self, email):
