@@ -3,6 +3,9 @@ from flask_login import current_user
 from ..forms import PostForm, RegistrationForm
 from ..models import Post, User, Comment
 
+import io
+import base64
+
 socials = Blueprint('socials', __name__)
 
 @socials.route('/about', methods=["GET"])
@@ -25,3 +28,17 @@ def index():
 @socials.route('/posts/<post_id>', methods=["GET", "POST"])
 def post_detail(post_id: str):
     return render_template('post_detail.html', post = Post.objects(id=post_id).first())
+
+
+@socials.route("/user/<username>")
+def user_detail(username):
+    user = User.objects(username=username).first()
+    posts = Post.objects(poster=user)
+
+    bytes_im = io.BytesIO(user.profile_pic.read())
+    image = base64.b64encode(bytes_im.getvalue()).decode()
+
+    return render_template("user_detail.html", username=username, posts=posts, image = image)
+
+    
+

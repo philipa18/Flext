@@ -1,0 +1,33 @@
+{% extends "header.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-2">
+        <img class="propic " src="data:image/png;base64,{{image}}" alt="image" width="160" height="200" style = "margin-left: 2.5rem">
+    </div>
+    <div class="col-10" style="text-align:left; align-items: center;">
+        <h2 style = "margin-top:4rem ;margin-left:1rem">{{ username }}'s Posts</h2>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <h1 style = "margin-left: 2.5rem"> Posts <small class="float-right">{{ posts.count() }} posts</small></h1>
+        <ul class="media-list">
+            {% for post in posts %}
+            <li class="media review-item border">
+                <div class="media-body">
+                    <span class="float-right">
+                        <small>Calories Burned:{{ post.calories }}</small>
+                    </span>
+                    <strong>
+                        <p class = "border">{{ post.title }}</p>
+                    </strong>
+                    <p>
+                        {{ post.content }}
+                    </p>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
