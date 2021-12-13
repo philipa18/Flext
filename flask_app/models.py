@@ -13,12 +13,10 @@ def load_user(user_id):
 class User(db.Document, UserMixin):
     username = db.StringField(required=True, unique=True)
     email = db.EmailField(required=True, unique=True)
-<<<<<<< HEAD
-    password = db.StringField(required=True)
-    #weight = db.IntegerField(required=False)
-=======
     password = db.StringField(required=False)
->>>>>>> sam
+    
+    #weight = db.IntegerField(required=False)
+    
 
     # Returns a unique string (the user's username) identifying each user
     def get_id(self):
