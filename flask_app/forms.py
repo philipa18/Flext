@@ -85,6 +85,6 @@ class UpdateProfilePicForm(FlaskForm):
     submit = SubmitField('Update Picture')
 
 class UpdateWeightForm(FlaskForm):
-    weight = IntegerField("Update Weight Below", validators=[InputRequired()])
+    weight = IntegerField("Update Weight in Pounds Below", validators=[InputRequired()])
     submit = SubmitField('Update Weight')
 

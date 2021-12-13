@@ -120,9 +120,9 @@ def google_authorize():
     username= user['family_name'] + user['given_name'] 
     email=user['email']
 
-    user = User.objects(email=user['email'], password = '').first()
-    if user is not None:
-        login_user(user)
+    active_user = User.objects(email=user['email'], password = '').first()
+    if active_user is not None:
+        login_user(active_user)
     else:
         while User.objects(username = username).first() is not None:
             username = user['family_name'] + user['given_name'] + str(random.randint(0, 1000))
