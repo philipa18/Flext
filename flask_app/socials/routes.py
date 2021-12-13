@@ -5,9 +5,10 @@ from ..models import Post, User, Comment
 
 socials = Blueprint('socials', __name__)
 
-# INCOMPLETE
-# The user's feed, which displays their friends' posts in chronological order and lets them search for 
-# other users by username
+@socials.route('/about', methods=["GET"])
+def about():
+    return render_template('about.html')
+
 @socials.route('/', methods=['GET', 'POST'])
 def index():
     form = PostForm()
