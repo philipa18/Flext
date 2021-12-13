@@ -21,9 +21,13 @@ class User(db.Document, UserMixin):
     # Returns a unique string (the user's username) identifying each user
     def get_id(self):
         return self.username
+
 class Post(db.Document):
+    title = db.StringField(required=True, min_length=1, max_length=50)
     content = db.StringField(required=True, min_length=1, max_length=500)
+    calories = db.IntField()
     poster = db.ReferenceField(User, required=True)
+    pumps = db.IntField()
 
 class Comment(db.Document):
     commenter = db.ReferenceField(User, required=True)
