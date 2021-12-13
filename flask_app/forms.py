@@ -2,7 +2,7 @@ from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from werkzeug.utils import secure_filename
-from wtforms import StringField, BooleanField, SubmitField, TextAreaField, PasswordField
+from wtforms import StringField, BooleanField, SubmitField, TextAreaField, PasswordField, IntegerField
 from wtforms.validators import (
     InputRequired,
     DataRequired,
@@ -69,7 +69,7 @@ class LoginForm(FlaskForm):
 
 class UpdateUsernameForm(FlaskForm):
     username = StringField(
-        "Username", validators=[InputRequired(), Length(min=1, max=40)]
+        "Update Your Username Here (You will need to log back in with your new username)", validators=[InputRequired(), Length(min=1, max=40)]
     )
     submit = SubmitField("Update Username")
 
@@ -78,3 +78,13 @@ class UpdateUsernameForm(FlaskForm):
             user = User.objects(username=username.data).first()
             if user is not None:
                 raise ValidationError("That username is already taken")
+
+
+class UpdateProfilePicForm(FlaskForm):
+    picture = FileField('Update Your Profile Pic Here', validators=[FileRequired(),FileAllowed(['jpg', 'png'], 'Images Only!')])
+    submit = SubmitField('Update Picture')
+
+class UpdateWeightForm(FlaskForm):
+    weight = IntegerField("Update Weight Below", validators=[InputRequired()])
+    submit = SubmitField('Update Weight')
+

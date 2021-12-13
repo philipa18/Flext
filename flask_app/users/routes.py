@@ -1,12 +1,18 @@
 from flask import Blueprint, redirect, url_for, render_template, flash, request, session
 from flask_login import current_user, login_required, login_user, logout_user
 from flask_mail import Message
+from werkzeug.utils import secure_filename
+
 
 from .. import bcrypt
 from .. import oauth
 from .. import mail
-from ..forms import RegistrationForm, LoginForm, UpdateUsernameForm
-from ..models import User
+from ..forms import RegistrationForm, LoginForm, UpdateUsernameForm, UpdateProfilePicForm, UpdateWeightForm
+from ..models import User, load_user
+
+import io
+import base64
+import random
 
 users = Blueprint("users", __name__)
 
@@ -56,19 +62,44 @@ def logout():
 @users.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
-    username_form = UpdateUsernameForm()
+    UpdateUsername_form = UpdateUsernameForm()
+    UpdatePropic_form = UpdateProfilePicForm()
+    UpdateWeight_form = UpdateWeightForm()
 
-    if username_form.validate_on_submit():
-        # current_user.username = username_form.username.data
-        current_user.modify(username=username_form.username.data)
+
+    if UpdateUsername_form.validate_on_submit():
+        new_username = UpdateUsername_form.username.data
+        current_user.modify(username=new_username)
         current_user.save()
-        return redirect(url_for("users.account"))
+        logout_user()
+        return redirect(url_for('users.login'))
 
-    return render_template(
-        "account.html",
-        title="Account",
-        username_form=username_form,
-    )
+    if UpdateWeight_form.validate_on_submit():
+        new_weight= UpdateWeight_form.weight.data
+        current_user.modify(weight=new_weight)
+        current_user.save()
+        return redirect(url_for('users.account'))
+
+
+    if UpdatePropic_form.validate_on_submit():
+        img = UpdatePropic_form.picture.data
+        filename = secure_filename(img.filename)
+        content_type = f'images/{filename[-3:]}'
+
+        if current_user.profile_pic.get() is None:
+            current_user.profile_pic.put(img.stream, content_type=content_type)
+        else:
+            current_user.profile_pic.replace(img.stream, content_type=content_type)
+            
+        current_user.save()
+        return redirect(url_for('users.account'))
+
+
+    bytes_im = io.BytesIO(current_user.profile_pic.read())
+    image = base64.b64encode(bytes_im.getvalue()).decode()
+
+    return render_template("account.html", UpdateUsername_form = UpdateUsername_form, UpdatePropic_form = UpdatePropic_form, UpdateWeight_form = UpdateWeight_form,image = image)
+
 
 
 @users.route('/google_login')
@@ -89,10 +120,13 @@ def google_authorize():
     username= user['family_name'] + user['given_name'] 
     email=user['email']
 
-    user = User.objects(username = username, email=user['email'], password = '').first()
+    user = User.objects(email=user['email'], password = '').first()
     if user is not None:
         login_user(user)
     else:
+        while User.objects(username = username).first() is not None:
+            username = user['family_name'] + user['given_name'] + str(random.randint(0, 1000))
+
         user = User(username= username, email=email, password = '')
         user.save()
         msg = Message('Hello, Thank you for joining our app', sender = 'cmsc388jfinal@gmail.com' , recipients = [email])
@@ -102,6 +136,6 @@ def google_authorize():
 
     session['profile'] = user_info
     session.permanent = True  
-    return redirect('users.account')
+    return redirect(url_for("users.account"))
 
 

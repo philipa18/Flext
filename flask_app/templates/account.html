@@ -2,32 +2,87 @@
 {% block content %}
 <div class="row">
     <div class="col">
-        <h1>Hey, {{ current_user.username }}!</h1>
+        {# Profile picture #}
+        <img class="propic" src="data:image/png;base64,{{image}}" alt="image">
+    </div>
+    <div class="col">
+        {# Greeting #}
+        <h1> Hey, {{ current_user.username }}! </h1>
+    <div class="row">
+        <h3>{# Weight info #}
+            {% if current_user.weight == None %}
+            You haven't provided us with your weigh yet, please enter it below!
+            {% else %}
+            Your current weight is {{ current_user.weight }} poundss
+            {% endif %}
+        </h3>
+    </div>
+  
     </div>
 </div>
 <div class="row">
     <div class="col">
-        <form action="" method="post">
-            {{ username_form.csrf_token }}
+        {# Username Update Form #}
+        <form method="POST" action="">
+            {{ UpdateUsername_form.csrf_token }}
             <div class="form-group">
-                {{ username_form.username.label(class="form-control-label") }}
-                {{ username_form.username(class="form-control form-control-lg") }}
+              {{ UpdateUsername_form.username.label }}
+              {{ UpdateUsername_form.username(class="form-control") }}
 
-                {% if username_form.username.errors %}
-                <div class="alert alert-warning" role="alert">
-                    {% for error in username_form.username.errors %}
-                    <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-                {% endif %}
+              {% if UpdateUsername_form.username.errors %}
+              <div class="alert alert-warning" role="alert">
+                {% for error in UpdateUsername_form.username.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+
             </div>
+            {{ UpdateUsername_form.submit() }}
+          </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        {# Profile Picture Update Form #}
+        <form action="" method="post" enctype="multipart/form-data">
+            {{ UpdatePropic_form.csrf_token }}
             <div class="form-group">
-                {{ username_form.submit }}
+              {{ UpdatePropic_form.picture.label }}
+              {{ UpdatePropic_form.picture(class="form-control") }}
+
+              {% if UpdatePropic_form.picture.errors %}
+              <div class="alert alert-warning" role="alert">
+                  {% for error in UpdatePropic_form.picture.errors %}
+                      <span>{{ error }}</span>
+                  {% endfor %}
+              </div>
+              {% endif %}
             </div>
+            {{ UpdatePropic_form.submit() }}
         </form>
     </div>
 </div>
-{# <a href="{{ url_for('movies.user_detail', username=current_user.username) }}">
-    <h4>Click here to see all of your posts and comments!</h4>
-</a> #}
+<div class="row">
+    <div class="col">
+        {# Weight Update Form #}
+        <form method="POST" action="">
+            {{ UpdateWeight_form.csrf_token }}
+            <div class="form-group">
+              {{ UpdateWeight_form.weight.label }}
+              {{ UpdateWeight_form.weight(class="form-control") }}
+
+              {% if UpdateWeight_form.weight.errors %}
+              <div class="alert alert-warning" role="alert">
+                {% for error in UpdateWeight_form.weight.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+              </div> 
+              {% endif %}
+
+            </div>
+            {{ UpdateWeight_form.submit() }}
+          </form> 
+    </div>
+</div>
 {% endblock %}>

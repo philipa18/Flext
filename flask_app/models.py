@@ -14,8 +14,8 @@ class User(db.Document, UserMixin):
     username = db.StringField(required=True, unique=True)
     email = db.EmailField(required=True, unique=True)
     password = db.StringField(required=False)
-    
-    #weight = db.IntegerField(required=False)
+    profile_pic = db.ImageField()
+    weight = db.IntField(required=False)
     
 
     # Returns a unique string (the user's username) identifying each user
