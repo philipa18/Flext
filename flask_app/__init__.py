@@ -26,6 +26,7 @@ def page_not_found(e):
 
 def create_app(test_config=None):
     app = Flask(__name__)
+    app.config["MONGODB_HOST"] = os.getenv("MONGODB_HOST") # Heroku database setup
 
     app.config.from_pyfile("config.py", silent=False)
     if test_config is not None:

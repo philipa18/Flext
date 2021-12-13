@@ -57,7 +57,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("users.register"))
+    return redirect(url_for("socials.index"))
 
 @users.route("/account", methods=["GET", "POST"])
 @login_required
@@ -137,5 +137,3 @@ def google_authorize():
     session['profile'] = user_info
     session.permanent = True  
     return redirect(url_for("users.account"))
-
-
