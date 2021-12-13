@@ -68,7 +68,7 @@ class LoginForm(FlaskForm):
 
 class UpdateUsernameForm(FlaskForm):
     username = StringField(
-        "Username", validators=[InputRequired(), Length(min=1, max=40)]
+        "Update Your Username Here (You will need to log back in with your new username)", validators=[InputRequired(), Length(min=1, max=40)]
     )
     submit = SubmitField("Update Username")
 
@@ -77,3 +77,13 @@ class UpdateUsernameForm(FlaskForm):
             user = User.objects(username=username.data).first()
             if user is not None:
                 raise ValidationError("That username is already taken")
+
+
+class UpdateProfilePicForm(FlaskForm):
+    picture = FileField('Update Your Profile Pic Here', validators=[FileRequired(),FileAllowed(['jpg', 'png'], 'Images Only!')])
+    submit = SubmitField('Update Picture')
+
+class UpdateWeightForm(FlaskForm):
+    weight = IntegerField("Update Weight Below", validators=[InputRequired()])
+    submit = SubmitField('Update Weight')
+
