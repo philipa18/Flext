@@ -2,7 +2,7 @@ from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from werkzeug.utils import secure_filename
-from wtforms import StringField, IntegerField, SubmitField, TextAreaField, PasswordField
+from wtforms import StringField, BooleanField, SubmitField, TextAreaField, PasswordField
 from wtforms.validators import (
     InputRequired,
     DataRequired,
@@ -13,12 +13,6 @@ from wtforms.validators import (
     ValidationError,
 )
 from .models import User
-
-class SearchForm(FlaskForm):
-    search_query = StringField(
-        "Query", validators=[InputRequired(), Length(min=1, max=100)]
-    )
-    submit = SubmitField("Search")
 
 class CommentForm(FlaskForm):
     text = TextAreaField(
@@ -32,12 +26,15 @@ class PostForm(FlaskForm):
     )
     submit = SubmitField("Post")
 
+class PumpForm(FlaskForm):
+    pumped = BooleanField("Pump")
+
 class RegistrationForm(FlaskForm):
     username = StringField(
         "Username", validators=[InputRequired(), Length(min=1, max=40)]
     )
     email = StringField("Email", validators=[InputRequired(), Email()])
-    password = PasswordField("Password", validators=[InputRequired()])
+    password = PasswordField("Password", validators=[InputRequired(), Length(min=8, max=32)])
     confirm_password = PasswordField(
         "Confirm Password", validators=[InputRequired(), EqualTo("password")]
     )
@@ -46,12 +43,24 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, username):
         user = User.objects(username=username.data).first()
         if user is not None:
-            raise ValidationError("Username is taken")
+            raise ValidationError("Username not available")
+    
+    def validate_password(self, password):
+        t: str = password.data
+        
+        if t.islower:
+            raise ValidationError("Password requires at least 1 uppercase letter")
+        if t.isupper:
+            raise ValidationError("Password requires at least 1 lowercase letter")
+        if t.isalpha:
+            raise ValidationError("Password requires at least 1 numeric character")
+        if t.isalnum:
+            raise ValidationError("Password requires at least 1 special character")
 
     def validate_email(self, email):
         user = User.objects(email=email.data).first()
         if user is not None:
-            raise ValidationError("Email is taken")
+            raise ValidationError("Email not available")
 
 class LoginForm(FlaskForm):
     username = StringField("Username", validators=[InputRequired()])
