@@ -1,1 +1,1 @@
-web: gunicorn "__init__:create_app()"
+web: gunicorn "flask_app:create_app()"
