@@ -51,3 +51,5 @@ def user_detail(username):
     image = base64.b64encode(bytes_im.getvalue()).decode()
 
     return render_template("user_detail.html", username=username, posts=posts, image = image)
+
+    
