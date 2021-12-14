@@ -47,10 +47,12 @@
         </form>
     </div>
     <div class="col">
-        <h2>Posts go here </h2>
+        <h2>Feed</h2>
         {% for post in posts %}
             <h3><a href="{{ url_for('socials.post_detail', post_id=post.id) }}">{{ post.title }}</a></h3>
-            User: {{post.poster.username}}
+            <a href="{{ url_for('socials.user_detail', username=post.poster.username) }}">
+               @{{post.poster.username}}
+            </a>
             {% if post.calories %}
                 <br>
                 Calories Burned:{{post.calories}}
