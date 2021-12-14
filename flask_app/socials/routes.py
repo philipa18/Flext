@@ -1,11 +1,17 @@
-from flask import Blueprint, redirect, url_for, render_template
+from flask import Blueprint, redirect, url_for, render_template, request
 from flask_login import current_user
+import json
 from ..forms import PostForm, RegistrationForm
 from ..models import Post, User, Comment
 
 socials = Blueprint('socials', __name__)
 
-@socials.route('/about', methods=["GET"])
+@socials.route('/csp_reports', methods=['GET', 'POST'])
+def csp_reports():
+    # json.loads(request.data.decode())["csp-report"]
+    return render_template('csp_reports.html')
+
+@socials.route('/about', methods=['GET'])
 def about():
     return render_template('about.html')
 

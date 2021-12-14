@@ -11,6 +11,7 @@ from flask_bcrypt import Bcrypt
 from werkzeug.utils import secure_filename
 from authlib.integrations.flask_client import OAuth
 from flask_mail import Mail
+from flask_talisman import Talisman
 # stdlib
 from datetime import datetime
 import os
@@ -26,6 +27,18 @@ def page_not_found(e):
 
 def create_app(test_config=None):
     app = Flask(__name__)
+    
+    csp = {
+        'default-src': [
+            '\'self\'',
+            'stackpath.bootstrapcdn.com'
+        ],
+        'img-src': '*'
+    }    
+    talisman = Talisman(app, \
+        content_security_policy=csp, \
+            content_security_policy_report_uri='http://127.0.0.1:5000/csp_reports')
+
     app.config["MONGODB_HOST"] = os.getenv("MONGODB_HOST") # Heroku database setup
 
     app.config.from_pyfile("config.py", silent=False)
