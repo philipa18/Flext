@@ -33,6 +33,7 @@ class Comment(db.Document):
     commenter = db.ReferenceField(User, required=True)
     content = db.StringField(required=True, min_length=1, max_length=250)
     date = db.StringField(required=True)
-    post = db.ReferenceField(Post, required=True)
+    parent = db.StringField(Required=False)
+    post = db.ReferenceField(Post, required=False)
 
 
