@@ -1,34 +1,70 @@
 {% extends "header.html" %}
 {% block content %}
-<h1>{{post.title}}</h1>
-<b>Calories Burned: {{post.calories}}</b>
-<br>
-<b>Posted By: {{post.poster.username}}</b>
-<br>
-{{post.content}}
+
+<div class="col">
+            <div class="media-body border" style = "margin-left: -1rem">
+                <span class="float-right">
+                    {% if post.calories %}
+                    <small>Calories Burned:{{ post.calories }}</small>
+                    {% endif %}
+                </span>
+                <strong>
+                    <p class = "border"> Post by<a href="{{ url_for('socials.user_detail', username=post.poster.username) }}">  @{{post.poster.username}}</a></p>
+                </strong>
+                <h5 style = "margin-bottom: 0px;">
+                    {{ post.title }}
+                </h5>
+                <p>{{ post.content }}</p>
+            </div>
+</div>
 
 {% if current_user.is_authenticated %}
-<h4>Comments</h4>
-<form action="" method="POST">
-    {{ form.csrf_token }}
-    {{ form.text(class="form-control", placeholder="Your comment") }}
-    {% if form.text.errors %}
+{# Comments form#}
+<h5 >Comment below!</h5>
+<div class="row">
+  <div class="col">
+    <form method="POST" action="">
+      {{ form.csrf_token }}
+      <div class="form-group">
+        {{ form.text(class="form-control", placeholder="Enter comment here") }}
+
+        {% if form.text.errors %}
         <div class="alert alert-warning" role="alert">
           {% for error in form.text.errors %}
           <span>{{ error }}</span>
           {% endfor %}
         </div>
-    {% endif %}
-    {{ form.submit() }}
-</form>
+        {% endif %}
 
-<br>
+      </div>
+      {{ form.submit() }}
+    </form>
+  </div>
+</div>
 {% endif %}
 
-{% for comment in comments %}
-    <b>{{comment.commenter.username}}</b>
-    <br>
-    {{comment.content}}
-    <br>
-{% endfor %}
+{# Comments #}
+<div class="row">
+  <div class="col-md-12">
+    <h5> Posted comments <small class="float-right">{{ comments|length }} comments</small></h5>
+    <ul class="media-list">
+      {% for comment in comments %}
+      <li class="media review-item border">
+        <div class="media-body">
+          <span class="float-right">
+            <small>{{ comment.date }}</small>
+          </span>
+          <a href="{{ url_for('socials.user_detail', username=comment.commenter.username ) }}"> 
+            <strong>@{{ comment.commenter.username }}</strong>
+          </a>
+          <p>
+            {{ comment.content }}
+          </p>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
 {% endblock %}
+
