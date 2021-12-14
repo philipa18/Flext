@@ -53,4 +53,3 @@ def user_detail(username):
     return render_template("user_detail.html", username=username, posts=posts, image = image)
 
     
-
