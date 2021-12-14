@@ -57,7 +57,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for("users.register"))
+    return redirect(url_for("socials.index"))
 
 @users.route("/account", methods=["GET", "POST"])
 @login_required
@@ -120,9 +120,9 @@ def google_authorize():
     username= user['family_name'] + user['given_name'] 
     email=user['email']
 
-    user = User.objects(email=user['email'], password = '').first()
-    if user is not None:
-        login_user(user)
+    active_user = User.objects(email=user['email'], password = '').first()
+    if active_user is not None:
+        login_user(active_user)
     else:
         while User.objects(username = username).first() is not None:
             username = user['family_name'] + user['given_name'] + str(random.randint(0, 1000))
@@ -137,5 +137,3 @@ def google_authorize():
     session['profile'] = user_info
     session.permanent = True  
     return redirect(url_for("users.account"))
-
-

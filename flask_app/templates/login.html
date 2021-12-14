@@ -55,7 +55,8 @@
 </div>
 <div class="row">
     <div class="col">
-        <h3>Login with google <a href="{{ url_for('users.google_login') }}"><b>here!</b></a></h3>
-    </div>
+        <a href="{{ url_for('users.google_login') }}">
+            <button type="button" class="btn btn-info w-100" style="height:48px;" >Login with <b>Google</b></button>
+         </a>  
 </div>
 {% endblock %}

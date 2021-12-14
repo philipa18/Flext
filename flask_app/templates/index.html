@@ -2,7 +2,7 @@
 {% block content %}
 
 <div class="row">
-    <div class="col">
+    <div class="col-3">
         <form action="/" class="form-inline my-2 my-lg-0" method="POST">
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
@@ -14,8 +14,10 @@
                 {% endif %}
             {% endwith %}
 
+            <h1>Post Here! </h1>
+
             {{ form.csrf_token }}
-            {{ form.title(class="form-control", placeholder="Title") }}
+            {{ form.title(class="form-control", placeholder="Title", style="width:210px") }}
             
             {% if form.title.errors %}
             <div class="alert alert-warning" role="alert">
@@ -34,7 +36,7 @@
             </div>
             {% endif %}
 
-            {{ form.calories(class="form-control", placeholder="Calories Burned") }}
+            {{ form.calories(class="form-control", placeholder="Calories Burned", style="width:210px") }}
             {% if form.calories.errors %}
             <div class="alert alert-warning" role="alert">
                 {% for error in form.calories.errors %}
@@ -43,24 +45,31 @@
             </div>
             {% endif %}
 
-            {{ form.submit(class="btn btn-outline-success") }}
+            {{ form.submit(class="btn btn-outline-success", style="width:210px") }}
         </form>
     </div>
-    <div class="col">
-        <h2>Posts go here </h2>
-        {% for post in posts %}
-            <h3><a href="{{ url_for('socials.post_detail', post_id=post.id) }}">{{ post.title }}</a></h3>
-            User: {{post.poster.username}}
-            {% if post.calories %}
-                <br>
-                Calories Burned:{{post.calories}}
-            {% endif %}
-            <br>
-            <br>
-        {% endfor %}
+    <div class="col-9">
+        <h1 style = "margin-left: 2.5rem"> Feed </h1>
+        <ul class="media-list">
+            {% for post in posts %}
+            <li class="media review-item border">
+                <div class="media-body">
+                    <span class="float-right">
+                        {% if post.calories %}
+                        <small>Calories Burned:{{ post.calories }}</small>
+                        {% endif %}
+                    </span>
+                    <strong>
+                        <p class = "border"><a href="{{ url_for('socials.user_detail', username=post.poster.username) }}"> @{{post.poster.username}}</a></p>
+                    </strong>
+                    <p>
+                        <a href="{{ url_for('socials.post_detail', post_id=post.id) }}">{{ post.title }}</a>
+                    </p>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
-    <div class="col">
-        <h2>Something else here</h2>
-    </div>
+    
 </div>
 {% endblock %}
