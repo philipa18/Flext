@@ -62,9 +62,15 @@
                     <strong>
                         <p class = "border"><a href="{{ url_for('socials.user_detail', username=post.poster.username) }}"> @{{post.poster.username}}</a></p>
                     </strong>
-                    <p>
-                        <a href="{{ url_for('socials.post_detail', post_id=post.id) }}">{{ post.title }}</a>
-                    </p>
+                    <span class="float-right">
+                        <a href="{{ url_for('socials.post_detail', post_id=post.id) }}">
+                            <button type="button" class="btn btn-info"  > <b>Comment</b></button>
+                         </a>  
+                    </span>
+                    <h5 style = "margin-bottom: 0px;">
+                        {{ post.title }}
+                    </h5>
+                    <p>{{ post.content }}</p>
                 </div>
             </li>
             {% endfor %}
