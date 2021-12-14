@@ -1,139 +1,53 @@
-from flask import Blueprint, redirect, url_for, render_template, flash, request, session
-from flask_login import current_user, login_required, login_user, logout_user
-from flask_mail import Message
-from werkzeug.utils import secure_filename
-
-
-from .. import bcrypt
-from .. import oauth
-from .. import mail
-from ..forms import RegistrationForm, LoginForm, UpdateUsernameForm, UpdateProfilePicForm, UpdateWeightForm
-from ..models import User, load_user
+from flask import Blueprint, redirect, url_for, render_template
+from flask_login import current_user
+from ..forms import CommentForm, PostForm, RegistrationForm
+from ..models import Post, User, Comment
+from datetime import datetime
 
 import io
 import base64
-import random
 
-users = Blueprint("users", __name__)
+socials = Blueprint('socials', __name__)
 
-@users.route("/register", methods=["GET", "POST"])
-def register():
-    if current_user.is_authenticated:
-        return redirect(url_for("users.account"))
+@socials.route('/about', methods=["GET"])
+def about():
+    return render_template('about.html')
 
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        msg = Message('Hello, Thank you for joining our app', sender = 'cmsc388jfinal@gmail.com' , recipients = [form.email.data])
-        mail.send(msg)
-        hashed = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
-        user = User(username=form.username.data, email=form.email.data, password=hashed)
-        user.save()
+@socials.route('/', methods=['GET', 'POST'])
+def index():
+    form = PostForm()
 
-        return redirect(url_for("users.login"))
+    if form.validate_on_submit() and current_user.is_authenticated:
+        Post(poster=current_user._get_current_object(), title=form.title.data,
+            content=form.text.data, calories=form.calories.data).save()
+        return redirect(url_for("socials.index"))
+    
+    posts = Post.objects()
 
-    return render_template("register.html", title="Register", form=form)
+    return render_template("index.html", form=form, posts=posts)
 
-@users.route("/login", methods=["GET", "POST"])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for("users.account"))
+@socials.route('/posts/<post_id>', methods=["GET", "POST"])
+def post_detail(post_id: str):
+    form = CommentForm()
+    post = Post.objects(id=post_id).first()
+    
+    if form.validate_on_submit() and current_user.is_authenticated:
+        print("We out here")
+        Comment(commenter=current_user._get_current_object(), content=form.text.data, 
+            parent=post_id, post=post, date=datetime.now().strftime("%B %d, %Y at %H:%M:%S")).save()
+        return redirect(url_for('socials.post_detail', post_id=post_id))
 
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.objects(username=form.username.data).first()
-
-        if user is not None and bcrypt.check_password_hash(
-            user.password, form.password.data
-        ):
-            login_user(user)
-            return redirect(url_for("users.account"))
-        else:
-            flash("Login failed. Check your username and/or password")
-            return redirect(url_for("users.login"))
-
-    return render_template("login.html", title="Login", form=form)
-
-@users.route("/logout")
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for("socials.index"))
-
-@users.route("/account", methods=["GET", "POST"])
-@login_required
-def account():
-    UpdateUsername_form = UpdateUsernameForm()
-    UpdatePropic_form = UpdateProfilePicForm()
-    UpdateWeight_form = UpdateWeightForm()
+    comments = Comment.objects(post=post)
+    print(comments)
+    return render_template('post_detail.html', post = post, form=form, comments=comments)
 
 
-    if UpdateUsername_form.validate_on_submit():
-        new_username = UpdateUsername_form.username.data
-        current_user.modify(username=new_username)
-        current_user.save()
-        logout_user()
-        return redirect(url_for('users.login'))
+@socials.route("/user/<username>")
+def user_detail(username):
+    user = User.objects(username=username).first()
+    posts = Post.objects(poster=user)
 
-    if UpdateWeight_form.validate_on_submit():
-        new_weight= UpdateWeight_form.weight.data
-        current_user.modify(weight=new_weight)
-        current_user.save()
-        return redirect(url_for('users.account'))
-
-
-    if UpdatePropic_form.validate_on_submit():
-        img = UpdatePropic_form.picture.data
-        filename = secure_filename(img.filename)
-        content_type = f'images/{filename[-3:]}'
-
-        if current_user.profile_pic.get() is None:
-            current_user.profile_pic.put(img.stream, content_type=content_type)
-        else:
-            current_user.profile_pic.replace(img.stream, content_type=content_type)
-            
-        current_user.save()
-        return redirect(url_for('users.account'))
-
-
-    bytes_im = io.BytesIO(current_user.profile_pic.read())
+    bytes_im = io.BytesIO(user.profile_pic.read())
     image = base64.b64encode(bytes_im.getvalue()).decode()
 
-    return render_template("account.html", UpdateUsername_form = UpdateUsername_form, UpdatePropic_form = UpdatePropic_form, UpdateWeight_form = UpdateWeight_form,image = image)
-
-
-
-@users.route('/google_login')
-def google_login():
-    google = oauth.create_client('google')  
-    redirect_uri = url_for('users.google_authorize', _external=True)
-    return google.authorize_redirect(redirect_uri)
-
-
-@users.route('/google_authorize')
-def google_authorize():
-    google = oauth.create_client('google')  
-    token = google.authorize_access_token()  
-    resp = google.get('userinfo')  
-    user_info = resp.json()
-    user = oauth.google.userinfo()  
-
-    username= user['family_name'] + user['given_name'] 
-    email=user['email']
-
-    active_user = User.objects(email=user['email'], password = '').first()
-    if active_user is not None:
-        login_user(active_user)
-    else:
-        while User.objects(username = username).first() is not None:
-            username = user['family_name'] + user['given_name'] + str(random.randint(0, 1000))
-
-        user = User(username= username, email=email, password = '')
-        user.save()
-        msg = Message('Hello, Thank you for joining our app', sender = 'cmsc388jfinal@gmail.com' , recipients = [email])
-        mail.send(msg)
-        login_user(user)
-
-
-    session['profile'] = user_info
-    session.permanent = True  
-    return redirect(url_for("users.account"))
+    return render_template("user_detail.html", username=username, posts=posts, image = image)

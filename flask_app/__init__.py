@@ -29,15 +29,10 @@ def create_app(test_config=None):
     app = Flask(__name__)
     
     csp = {
-        'default-src': [
-            '\'self\'',
-            'stackpath.bootstrapcdn.com'
-        ],
-        'img-src': '*'
+        'default-src': ['\'self\'', '\'unsafe-inline\'', 'stackpath.bootstrapcdn.com', 'code.jquery.com', 'cdn.jsdelivr.net'],
+        'img-src': ['\'self\'', 'data:']
     }    
-    talisman = Talisman(app, \
-        content_security_policy=csp, \
-            content_security_policy_report_uri='http://127.0.0.1:5000/csp_reports')
+    Talisman(app, content_security_policy=csp)
 
     app.config["MONGODB_HOST"] = os.getenv("MONGODB_HOST") # Heroku database setup
 

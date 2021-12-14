@@ -1,11 +1,6 @@
-from flask import Blueprint, redirect, url_for, render_template, request
+from flask import Blueprint, redirect, url_for, render_template
 from flask_login import current_user
-<<<<<<< HEAD
-import json
-from ..forms import PostForm, RegistrationForm
-=======
 from ..forms import CommentForm, PostForm, RegistrationForm
->>>>>>> 32b008b13c3afacdd6dd158eede71519aa10ed8a
 from ..models import Post, User, Comment
 from datetime import datetime
 
@@ -14,12 +9,7 @@ import base64
 
 socials = Blueprint('socials', __name__)
 
-@socials.route('/csp_reports', methods=['GET', 'POST'])
-def csp_reports():
-    # json.loads(request.data.decode())["csp-report"]
-    return render_template('csp_reports.html')
-
-@socials.route('/about', methods=['GET'])
+@socials.route('/about', methods=["GET"])
 def about():
     return render_template('about.html')
 
@@ -61,6 +51,3 @@ def user_detail(username):
     image = base64.b64encode(bytes_im.getvalue()).decode()
 
     return render_template("user_detail.html", username=username, posts=posts, image = image)
-
-    
-
