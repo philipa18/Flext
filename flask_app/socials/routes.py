@@ -1,8 +1,13 @@
 from flask import Blueprint, redirect, url_for, render_template, request
 from flask_login import current_user
+<<<<<<< HEAD
 import json
 from ..forms import PostForm, RegistrationForm
+=======
+from ..forms import CommentForm, PostForm, RegistrationForm
+>>>>>>> 32b008b13c3afacdd6dd158eede71519aa10ed8a
 from ..models import Post, User, Comment
+from datetime import datetime
 
 import io
 import base64
@@ -33,7 +38,18 @@ def index():
 
 @socials.route('/posts/<post_id>', methods=["GET", "POST"])
 def post_detail(post_id: str):
-    return render_template('post_detail.html', post = Post.objects(id=post_id).first())
+    form = CommentForm()
+    post = Post.objects(id=post_id).first()
+    
+    if form.validate_on_submit() and current_user.is_authenticated:
+        print("We out here")
+        Comment(commenter=current_user._get_current_object(), content=form.text.data, 
+            parent=post_id, post=post, date=datetime.now().strftime("%B %d, %Y at %H:%M:%S")).save()
+        return redirect(url_for('socials.post_detail', post_id=post_id))
+
+    comments = Comment.objects(post=post)
+    print(comments)
+    return render_template('post_detail.html', post = post, form=form, comments=comments)
 
 
 @socials.route("/user/<username>")

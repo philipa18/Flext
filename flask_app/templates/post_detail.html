@@ -6,4 +6,29 @@
 <b>Posted By: {{post.poster.username}}</b>
 <br>
 {{post.content}}
+
+{% if current_user.is_authenticated %}
+<h4>Comments</h4>
+<form action="" method="POST">
+    {{ form.csrf_token }}
+    {{ form.text(class="form-control", placeholder="Your comment") }}
+    {% if form.text.errors %}
+        <div class="alert alert-warning" role="alert">
+          {% for error in form.text.errors %}
+          <span>{{ error }}</span>
+          {% endfor %}
+        </div>
+    {% endif %}
+    {{ form.submit() }}
+</form>
+
+<br>
+{% endif %}
+
+{% for comment in comments %}
+    <b>{{comment.commenter.username}}</b>
+    <br>
+    {{comment.content}}
+    <br>
+{% endfor %}
 {% endblock %}
