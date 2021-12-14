@@ -19,7 +19,7 @@
                         <small>Calories Burned:{{ post.calories }}</small>
                     </span>
                     <strong>
-                        <p class = "border">{{ post.title }}</p>
+                        <p class = "border"><a href="{{ url_for('socials.post_detail', post_id=post.id) }}">{{ post.title }}</a></p>
                     </strong>
                     <p>
                         {{ post.content }}
